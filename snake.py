@@ -1,11 +1,6 @@
-"""Snake, classic arcade game.
+"""
 
-Exercises
-
-1. How do you make the snake faster or slower?
-2. How can you make the snake go around the edges?
-3. How would you move the food?
-4. Change the snake to respond to mouse clicks.
+Snake, classic arcade game.
 
 """
 
@@ -17,6 +12,10 @@ from freegames import square, vector
 food = vector(0, 0)
 snake = [vector(10, 0)]
 aim = vector(0, -10)
+
+# Arreglo con las posibles en las que se puede mover la comida
+# Derecha, Izquierda, Arriba, Abajo, una unidad cada uno
+directions = [vector(10, 0), vector(-10, 0), vector(0, 10), vector(0, -10)]
 
 # Se agregan 6 posibles colores
 colors = ['yellow', 'green', 'blue', 'black', 'orange', 'pink']
@@ -35,6 +34,28 @@ def change(x, y):
 def inside(head):
     "Return True if head inside boundaries."
     return -200 < head.x < 190 and -200 < head.y < 190
+
+
+def isValid(pos):
+    "Determina si una posicion arbitraria pos es valida en el tablero"
+    return pos.x <= 190 and pos.x >= -180 and pos.y <= 190 and pos.y >= -180
+
+
+def moveFood():
+    "Mueve la comida cada 5 movimientos que realiza la serpiente"
+    # Permitir que se vea food en el scope actual
+    global food
+    # General una posicion aleatoria para la direccion
+    pos = randrange(0, len(directions) - 1)
+    # Posicion aleatoria a la que se moveria
+    check = food + directions[pos]
+    # Se comprueba que sea una posicion valida
+    if isValid(check):
+        food = check
+    else:
+        # Si no es valida se considera la posicion contraria en el arreglo
+        food += directions[pos ^ 1]
+    ontimer(moveFood, 500)
 
 
 def move():
@@ -75,4 +96,5 @@ onkey(lambda: change(-10, 0), 'Left')
 onkey(lambda: change(0, 10), 'Up')
 onkey(lambda: change(0, -10), 'Down')
 move()
+moveFood()
 done()
